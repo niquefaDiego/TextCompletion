@@ -1,3 +1,5 @@
+package core;
+
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -6,7 +8,19 @@ import javafx.util.Pair;
 
 import java.io.*;
 
-public class DBParser {
+public class DBParser
+{
+	private static DBParser instance;
+	private static final Object lock = new Object();
+	
+	public static DBParser getInstance() {
+		synchronized(lock) {
+			if ( instance == null ) {
+				instance = new DBParser();
+			}
+			return instance;
+		}
+	}
 	public final double A = 0.5;
 	public final double B = 0.5;
 	
@@ -51,16 +65,24 @@ public class DBParser {
 		}
 	}
 	
-	public void doit() throws IOException {
-		BufferedReader in = new BufferedReader ( new FileReader("esp.testa.txt") );
+	private DBParser() {
+		BufferedReader in;
+		
+		try { in = new BufferedReader ( new FileReader("esp.train.txt") ); }
+		catch ( IOException e ) { throw new RuntimeException(); }
 		
 		String line;
 		String longWord = null;
 		String longWordType = null;
 		int lineIndex = 0;
 		String previousType = null;
-		while ( ( line = in.readLine() ) != null ) {
+		while ( true ) {
 			lineIndex++;
+			
+			try { line = in.readLine(); }
+			catch ( IOException e ) { throw new RuntimeException("Failed to read line " + lineIndex); }
+			if ( line == null ) break;
+			
 			line = line.trim();
 			if ( line.isEmpty() ) continue;
 			String tokens[] = line.split(" ");
@@ -100,7 +122,7 @@ public class DBParser {
 		calcProbabilities();
 		
 //		System.out.println( "-------- WORDS --------" );
-//		System.out.println( "There are " + words.size() + " words" );
+		System.out.println( "There are " + words.size() + " words" );
 //		for ( String word : words.keySet() ) {
 //			System.out.print( word + ":" );
 //			for ( String type : words.get(word) )
@@ -110,7 +132,7 @@ public class DBParser {
 //		}
 		
 //		System.out.println( "-------- TYPES --------" );
-//		System.out.println( "There are " + types.size() + " types" );
+		System.out.println( "There are " + types.size() + " types" );
 //		for ( String type : types.keySet() ) {
 //			System.out.print( type + ":" );
 //			for ( String word : types.get(type) )
@@ -118,11 +140,13 @@ public class DBParser {
 //			System.out.println();
 //		}
 		
-		in.close();
+		try {in.close();}
+		catch ( IOException e ) { e.printStackTrace(); }
 	}
 	
 	private double getHighestMarkovChainValue(String prevWord, String word) {
 		double ans = 0.0;
+		if ( prevWord == null || word == null ) return 0.0;
 		if (!words.containsKey(prevWord) || !words.containsKey(word)) return 0.0;
 		for(String typePrevWord: words.get(prevWord)) {
 			for(String typeWord: words.get(word)) {
@@ -138,8 +162,8 @@ public class DBParser {
 		return A*freq.get(word) + B*getHighestMarkovChainValue(prevWord, word);
 	}
 	
-	public List<String> getPredictions(String prevWord, String current, int maxPredictions) {
-		List<String> predictions = null;
+	public synchronized List<String> getPredictions(String prevWord, String current, int maxPredictions) {
+		List<String> predictions = new ArrayList<String>();
 		List<Pair<Double, String>> possible = new ArrayList<Pair<Double, String>>();
 		for(Entry<String, Set<String>> entry: words.entrySet()) {
 			String word = entry.getKey();
@@ -155,7 +179,6 @@ public class DBParser {
 			   }
 			});
 		if (possible.size() > 0) {
-			predictions = new ArrayList<String>();
 			int id = possible.size()-1;
 			while(maxPredictions > 0 && id >= 0) {
 				System.out.println(possible.get(id).getValue());
@@ -166,8 +189,5 @@ public class DBParser {
 		}
 		return predictions;
 	}
-	
-	public static void main(String args[]) throws IOException {
-		new DBParser().doit();
-	}
+
 }

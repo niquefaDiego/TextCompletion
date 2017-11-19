@@ -1,11 +1,9 @@
 package application;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
+import core.DBParser;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
@@ -17,14 +15,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.shape.Path;
 import javafx.stage.Window;
 
+
 public class AutocompleteTextArea extends TextArea implements AutocompleteCallback
 {
-	public static final int MAX_ENTRIES = 5;
+	public static final int MAX_ENTRIES = 8;
 	public static final String NUMBER = "9"; //when the previous word is a number, previousWord will be "9"
-	
-	//TODO remove when Trie is implemented :)
-	private final SortedSet<String> entries = new TreeSet<>();
-	
+
 	private ListPopup dropdownList = null;
 	
 	// [) range of the word being typed, only used if dropdownList != null
@@ -120,10 +116,7 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 			return;
 		}
 
-		//TODO delete "entries" dummy set and replace the next 2 lines with
-		//LinkedList<String> searchResult = Yisus.getPredictions(previousWord, word)
-		LinkedList<String> searchResult = new LinkedList<>();
-		searchResult.addAll(entries.subSet(currentWord, currentWord + Character.MAX_VALUE));
+		List<String> searchResult = DBParser.getInstance().getPredictions(previousWord, currentWord, MAX_ENTRIES);
 		if (searchResult.size() > 0) {
 			showInPopup(searchResult);
 		} else {
@@ -133,12 +126,6 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 	
 	public AutocompleteTextArea() {
 	    super();
-	    
-	    //TODO remove this
-	    String words[] = { "diego", "said", "velasquez", "dado", "duda", "dudu" };
-	    for ( String word : words )
-	    	entries.add(word);
-	    
 	    textProperty().addListener(new TextChangeListener());  
 	}
 	
