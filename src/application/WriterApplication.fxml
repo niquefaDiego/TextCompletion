@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import application.AutocompleteTextArea?>
+
+
+<VBox
+	maxHeight="-Infinity"
+	maxWidth="-Infinity"
+	minHeight="-Infinity"
+	minWidth="-Infinity"
+	xmlns="http://javafx.com/javafx/8"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="application.WriterApplicationController">
+
+	<children>
+		<AutocompleteTextArea
+			fx:id="autocompleteTextArea"/>
+		
+		<GridPane 
+			xmlns:fx="http://javafx.com/fxml"
+			hgap="10" vgap="10">			
+			<children>
+				<Label text="Palabra anterior:" 
+					GridPane.columnIndex="0" GridPane.rowIndex="0"
+					GridPane.columnSpan="1"/>
+					
+				<Label text="alan" 
+					fx:id="previousWord"
+					GridPane.columnIndex="1" GridPane.rowIndex="0"
+					GridPane.columnSpan="1"/>
+					
+				<Label text="sustantivo"
+					fx:id="previousWordType" 
+					GridPane.columnIndex="2" GridPane.rowIndex="0"
+					GridPane.columnSpan="1"/>
+	
+				<Label text="Palabra actual:"
+					GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+				 
+				<Label text="yis"
+					fx:id="currentWord"
+					GridPane.columnIndex="1" GridPane.rowIndex="1"
+					GridPane.columnSpan="2"/>
+				 
+				<Label text="Tipo esperado:"
+					GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+					
+				<Label text="verbo"
+					fx:id="currentWordExpectedType"
+					GridPane.columnIndex="1" GridPane.rowIndex="2"
+					GridPane.columnSpan="2"/>
+
+			</children>
+		</GridPane>	
+	</children>
+</VBox>

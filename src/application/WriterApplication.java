@@ -1,17 +1,22 @@
 package application;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class WriterApplication extends Application
 {
-	
 	@Override
     public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("Predictor");
-		AutocompleteTextArea textArea = new AutocompleteTextArea();
+		
+		FXMLLoader fxmlLoader = new FXMLLoader(ListPopup.class.getResource("WriterApplication.fxml"));
+		Parent content = fxmlLoader.load();
+		WriterApplicationController controller = (WriterApplicationController) fxmlLoader.getController();
+		
+		/*AutocompleteTextArea textArea = new AutocompleteTextArea();
 		
         VBox vbox = new VBox(textArea);
 		Scene scene = new Scene( vbox, 600, 500 );
@@ -21,7 +26,8 @@ public class WriterApplication extends Application
 		textArea.prefHeightProperty().bind(vbox.prefHeightProperty());
 
 		
-		primaryStage.setScene(scene);
+		primaryStage.setScene(scene);*/
+		primaryStage.setScene( new Scene(content) );
 		primaryStage.show();
 	}
 }
