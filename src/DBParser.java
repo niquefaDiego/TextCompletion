@@ -1,8 +1,15 @@
 
 import java.util.*;
+import java.util.Map.Entry;
+
+import javafx.util.Pair;
+
 import java.io.*;
 
 public class DBParser {
+	public final double A = 0.5;
+	public final double B = 0.5;
+	
 	Map<String, Set<String> > words = new TreeMap<String, Set<String>>();
 	Map<String, Set<String> > types = new TreeMap<String, Set<String>>();
 	Map<String, Integer> freq = new TreeMap<String, Integer>();
@@ -112,6 +119,52 @@ public class DBParser {
 //		}
 		
 		in.close();
+	}
+	
+	private double getHighestMarkovChainValue(String prevWord, String word) {
+		double ans = 0.0;
+		if (!words.containsKey(prevWord) || !words.containsKey(word)) return 0.0;
+		for(String typePrevWord: words.get(prevWord)) {
+			for(String typeWord: words.get(word)) {
+				if (markovChain.containsKey(typePrevWord) && markovChain.get(typePrevWord).containsKey(typeWord)) {
+					ans = Math.max(ans, markovChain.get(typePrevWord).get(typeWord));
+				}
+			}
+		}
+		return ans;
+	}
+	
+	private double calcUtility(String prevWord, String word) {
+		return A*freq.get(word) + B*getHighestMarkovChainValue(prevWord, word);
+	}
+	
+	public List<String> getPredictions(String prevWord, String current, int maxPredictions) {
+		List<String> predictions = null;
+		List<Pair<Double, String>> possible = new ArrayList<Pair<Double, String>>();
+		for(Entry<String, Set<String>> entry: words.entrySet()) {
+			String word = entry.getKey();
+			if (word.startsWith(current)) {
+				double utility = calcUtility(prevWord, word);
+				possible.add(new Pair(utility, word));
+			}
+		}
+		possible.sort(new Comparator<Pair>() {
+			   @Override
+			   public int compare(Pair p1, Pair p2) {
+			       return ((Double) (p1.getKey())).compareTo((Double)p2.getKey());
+			   }
+			});
+		if (possible.size() > 0) {
+			predictions = new ArrayList<String>();
+			int id = possible.size()-1;
+			while(maxPredictions > 0 && id >= 0) {
+				System.out.println(possible.get(id).getValue());
+				predictions.add(possible.get(id).getValue());
+				maxPredictions --;
+				id --;
+			}
+		}
+		return predictions;
 	}
 	
 	public static void main(String args[]) throws IOException {
