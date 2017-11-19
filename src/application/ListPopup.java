@@ -3,13 +3,17 @@ package application;
 import java.io.IOException;
 import java.util.List;
 
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Popup;
 
-public class ListPopup extends Popup {
+public class ListPopup extends Popup
+{
+	private static final int LV_ROW_HEIGHT = 24;
 	
 	private ListPopupController controller;
 	
@@ -17,7 +21,13 @@ public class ListPopup extends Popup {
 		return controller;
 	}
 	
-	public ListPopup(List<String> list, Point2D position, AutocompleteCallback callback) throws IOException {
+	public ListPopup(
+			List<String> list,
+			Point2D position,
+			AutocompleteCallback callback)
+			throws IOException
+	{
+		
 		FXMLLoader fxmlLoader = new FXMLLoader(ListPopup.class.getResource("ListPopup.fxml"));
 		Parent content = fxmlLoader.load();
 
@@ -25,27 +35,23 @@ public class ListPopup extends Popup {
 		controller.populateList(list);
 		controller.setAutocompleteCallback(callback);
 
-		controller.lvCompletion
-			.getSelectionModel()
-			.selectedItemProperty()
-			.addListener((obs, oldValue, newValue) -> {
-				if( newValue != null ) {
-
-					System.out.println( "ListPopup went from " + oldValue + " to " + newValue );
+		final ObservableList<String> items = controller.lvCompletion.getItems();
+		
+		controller.lvCompletion.setPrefHeight(items.size()*LV_ROW_HEIGHT + 2);
+		items.addListener( new ListChangeListener<String>() {
+				@Override
+				public void onChanged(Change<? extends String> c) {
+					controller.lvCompletion.setPrefHeight(items.size()*LV_ROW_HEIGHT + 2);
 				}
-				
 			});
 		
 		controller.lvCompletion.setOnKeyPressed( evt -> {
 				if ( evt.getCode() == KeyCode.TAB ) {
-					if ( evt.isShiftDown() )
-						controller.selectPrev();
-					else
-						controller.selectNext();
+					if ( evt.isShiftDown() ) controller.selectPrev();
+					else controller.selectNext();
 				}
-				else if ( evt.getCode() == KeyCode.ENTER ) {
+				else if ( evt.getCode() == KeyCode.ENTER )
 					controller.selectCurrent();
-				}
 			});
 			
 		setX( position.getX() );

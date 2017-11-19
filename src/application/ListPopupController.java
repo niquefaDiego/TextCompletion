@@ -5,8 +5,8 @@ import java.util.List;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 
-public class ListPopupController {
-	
+public class ListPopupController
+{
 	@FXML
 	ListView<String> lvCompletion;
 	
@@ -40,6 +40,7 @@ public class ListPopupController {
 	}
 	
 	void populateList ( List<String> list ) {
+		lvCompletion.getItems().clear();
 		lvCompletion.getItems().addAll( list );
 	}
 	
