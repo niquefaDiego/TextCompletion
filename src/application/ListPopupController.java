@@ -40,6 +40,7 @@ public class ListPopupController {
 	}
 	
 	void populateList ( List<String> list ) {
+		lvCompletion.getItems().clear();
 		lvCompletion.getItems().addAll( list );
 	}
 	

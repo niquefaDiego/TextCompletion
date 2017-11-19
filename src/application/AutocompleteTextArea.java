@@ -28,11 +28,12 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 	
 	// [) range of the word being typed, only used if dropdownList != null
 	private int wordBeg = -1, wordEnd = -1;
-	private Point2D dropdownListPosition = null;
 	
 	private void hideDropdown() {
-		if ( dropdownList != null )
+		if ( dropdownList != null ) {
 			dropdownList.hide();
+			dropdownList = null;
+		}
 	}
 	
 	// --------------- START OF HACK ---------------------
@@ -73,21 +74,28 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 	}
 	// ---------------- END OF HACK --------------------
 	
-	private void showPopup(List<String> list, int wordBeg, int wordEnd) {
-		hideDropdown();
-		try {
-		 	Point2D position = dropdownListPosition;
-		 	if ( position == null ) {
+	/**
+	 * Creates ands shows the Popup if it's not showing (dropdownList is null).
+	 * Updates the list in Popup if it's showing (dropdownList is not null).
+	 * @param list
+	 * @param wordBeg
+	 * @param wordEnd
+	 */
+	private synchronized void showPopup(List<String> list) {
+		if ( dropdownList == null ) {
+			try {
 				Path caret = findCaret(this);
-		 		position = findScreenLocation(caret).add(0,10);
-		 		dropdownListPosition = position;
-		 	}
-			dropdownList = new ListPopup(list, position, this);
-			dropdownList.show(getScene().getWindow());
-		} catch ( IOException e ) {
-			e.printStackTrace();
-			System.err.println("Couldn't initialize dropdown list :c");
+		 		Point2D position = findScreenLocation(caret).add(0,10);
+				dropdownList = new ListPopup(list, position, this);
+			} catch ( IOException e ) {
+				e.printStackTrace();
+				System.err.println("Couldn't initialize dropdown list :c");
+			}			
 		}
+		else {
+			dropdownList.getController().populateList(list);
+		}
+		dropdownList.show(getScene().getWindow());
 	}
 	
 	@Override
@@ -115,7 +123,7 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 		if (searchResult.size() > 0)
 		{
 			System.out.println("show dropdown");
-			showPopup(searchResult, wordBeg, wordEnd);
+			showPopup(searchResult);
 		}
 		else
 			hideDropdown();
@@ -153,8 +161,10 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 					end++;
 				
 				if ( beg < end && iters < MAX_ITERS ) {
-					if ( wordBeg != beg )
-						dropdownListPosition = null;
+					//new word is being typed
+					if ( wordBeg != beg ) {
+						hideDropdown();
+					}
 					wordBeg = beg; wordEnd = end;
 					wordBeingTypedChanged(newText.substring(wordBeg, wordEnd));	
 				}

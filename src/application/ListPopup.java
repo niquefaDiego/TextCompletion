@@ -17,7 +17,13 @@ public class ListPopup extends Popup {
 		return controller;
 	}
 	
-	public ListPopup(List<String> list, Point2D position, AutocompleteCallback callback) throws IOException {
+	public ListPopup(
+			List<String> list,
+			Point2D position,
+			AutocompleteCallback callback)
+			throws IOException
+	{
+		
 		FXMLLoader fxmlLoader = new FXMLLoader(ListPopup.class.getResource("ListPopup.fxml"));
 		Parent content = fxmlLoader.load();
 
