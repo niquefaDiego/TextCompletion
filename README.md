@@ -2,14 +2,18 @@ For this project we are working with the Spanish data from CoNLL-2002 shared tas
 
 For the third column of the data, we found the following information:
 
-O means no named entities
-B-XXX first word of the XXX entity
-I-XXX all other words of the XXX entity
+- O means no named entities
 
-XXX: PER person
-     ORG organization
-     LOC locations
-     MISC miscellaneous names
+- B-XXX first word of the XXX entity
+
+- I-XXX all other words of the XXX entity
+
+
+XXX: 
+    - PER person
+    - ORG organization
+    - LOC locations
+    - MISC miscellaneous names
 
 Names are suppose to be Non-recursive and non-overlapping
 
