@@ -51,7 +51,7 @@ public class DBParser {
 		String longWord = null;
 		String longWordType = null;
 		int lineIndex = 0;
-		String previous = null;
+		String previousType = null;
 		while ( ( line = in.readLine() ) != null ) {
 			lineIndex++;
 			line = line.trim();
@@ -65,13 +65,13 @@ public class DBParser {
 			if ( tokens[2].charAt(0) == 'O' ) {
 				if ( longWord != null ) {
 					foundWord(longWord, longWordType);
-					addFreqToChain(previous, longWord);
-					previous = longWord;
+					addFreqToChain(previousType, longWordType);
+					previousType = longWordType;
 					longWord = longWordType = null;
 				}
 				foundWord ( word, tokens[1] );
-				addFreqToChain(previous, word);
-				previous = word;
+				addFreqToChain(previousType, tokens[1]);
+				previousType = tokens[1];
 			}
 			else if ( tokens[2].charAt(0) == 'I' ) {
 				longWord += " " + word;
@@ -86,7 +86,7 @@ public class DBParser {
 		
 		if ( longWord != null ) {
 			foundWord ( longWord, longWordType );
-			addFreqToChain(previous, longWord);
+			addFreqToChain(previousType, longWordType);
 			longWord = longWordType = null;
 		}
 		
