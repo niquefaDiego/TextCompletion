@@ -5,6 +5,7 @@ import java.io.*;
 public class DBParser {
 	Map<String, Set<String> > words = new TreeMap<String, Set<String>>();
 	Map<String, Set<String> > types = new TreeMap<String, Set<String>>();
+	Map<String, Integer> freq = new TreeMap<String, Integer>();
 	
 	public void foundWord ( String word, String type ) {
 		word = word.toLowerCase();
@@ -13,8 +14,11 @@ public class DBParser {
 			words.put ( word, new TreeSet<String>() );
 		if ( !types.containsKey(type) )
 			types.put( type, new TreeSet<String>() );
+		if (!freq.containsKey(word)) 
+			freq.put(word, 0);
 		words.get(word).add(type);
 		types.get(type).add(word);
+		freq.put(word, freq.get(word) + 1);
 	}
 	
 	public void doit() throws IOException {
@@ -63,6 +67,7 @@ public class DBParser {
 			System.out.print( word + ":" );
 			for ( String type : words.get(word) )
 				System.out.print ( " " + type );
+//			System.out.println(freq.get(word));
 			System.out.println();
 		}
 		
