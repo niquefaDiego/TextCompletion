@@ -20,6 +20,7 @@ import javafx.stage.Window;
 public class AutocompleteTextArea extends TextArea implements AutocompleteCallback
 {
 	public static final int MAX_ENTRIES = 5;
+	public static final String NUMBER = "9"; //when the previous word is a number, previousWord will be "9"
 	
 	//TODO remove when Trie is implemented :)
 	private final SortedSet<String> entries = new TreeSet<>();
@@ -110,21 +111,24 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 		hideDropdown();
 	}
 	
-	private void wordBeingTypedChanged ( String word ) {
+	private void wordBeingTypedChanged ( String currentWord, String previousWord ) {
 		
-		if ( word == null ) {
+		System.out.println( "prevWord = " + previousWord + ", current word = " + currentWord );
+		
+		if ( currentWord == null ) {
 			hideDropdown();
 			return;
 		}
-		
+
+		//TODO delete "entries" dummy set and replace the next 2 lines with
+		//LinkedList<String> searchResult = Yisus.getPredictions(previousWord, word)
 		LinkedList<String> searchResult = new LinkedList<>();
-		searchResult.addAll(entries.subSet(word, word + Character.MAX_VALUE));
-		if (searchResult.size() > 0)
-		{
+		searchResult.addAll(entries.subSet(currentWord, currentWord + Character.MAX_VALUE));
+		if (searchResult.size() > 0) {
 			showInPopup(searchResult);
-		}
-		else
+		} else {
 			hideDropdown();
+		}
 	}
 	
 	public AutocompleteTextArea() {
@@ -150,21 +154,41 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 				int end = beg;
 				int iters = 0;
 
-				//all words have less than 100 letters U_U
-				final int MAX_ITERS = 100;
-				while ( beg >= 0 && Character.isLetter(newText.charAt(beg)) && iters < MAX_ITERS)
-					beg--;
+				final int MAX_ITERS = 100; //all words have less than 100 letters U_U
+				while ( beg >= 0 && Character.isLetter(newText.charAt(beg))
+						&& iters++ < MAX_ITERS) beg--;
 				beg++;
-				while ( end < newText.length() && Character.isLetter(newText.charAt(end)) && iters < MAX_ITERS )
-					end++;
+				
+				while ( end < newText.length()
+						&& Character.isLetter(newText.charAt(end))
+						&& iters++ < MAX_ITERS ) end++;
 				
 				if ( beg < end && iters < MAX_ITERS ) {
 					//new word is being typed
 					if ( wordBeg != beg ) {
 						hideDropdown();
 					}
+					
+					
 					wordBeg = beg; wordEnd = end;
-					wordBeingTypedChanged(newText.substring(wordBeg, wordEnd));	
+					
+					//find previus word
+					iters = 0;
+					int j = wordBeg-1;
+					while ( j >= 0 && !Character.isLetter(newText.charAt(j))
+							&& !Character.isDigit(newText.charAt(j))
+							&& iters++ < MAX_ITERS ) j--;
+					int i = j;
+					while ( i >= 0 && Character.isLetter(newText.charAt(i))
+							&& iters++ < MAX_ITERS ) i--;
+					i++;
+					
+					String previousWord = null;
+					if ( j >= 0 && iters < MAX_ITERS ) {
+						if ( Character.isDigit(newText.charAt(j)) ) previousWord = NUMBER;
+						else previousWord = newText.substring(i,j+1);
+					}
+					wordBeingTypedChanged(newText.substring(wordBeg, wordEnd), previousWord);	
 				}
 				else
 					hideDropdown();
