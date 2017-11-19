@@ -81,7 +81,7 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 	 * @param wordBeg
 	 * @param wordEnd
 	 */
-	private synchronized void showPopup(List<String> list) {
+	private synchronized void showInPopup(List<String> list) {
 		if ( dropdownList == null ) {
 			try {
 				Path caret = findCaret(this);
@@ -111,7 +111,6 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 	}
 	
 	private void wordBeingTypedChanged ( String word ) {
-		System.out.println("word being typed = '" + word + "'" );
 		
 		if ( word == null ) {
 			hideDropdown();
@@ -122,8 +121,7 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 		searchResult.addAll(entries.subSet(word, word + Character.MAX_VALUE));
 		if (searchResult.size() > 0)
 		{
-			System.out.println("show dropdown");
-			showPopup(searchResult);
+			showInPopup(searchResult);
 		}
 		else
 			hideDropdown();
