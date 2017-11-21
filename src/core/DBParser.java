@@ -181,7 +181,7 @@ public class DBParser
 		if (possible.size() > 0) {
 			int id = possible.size()-1;
 			while(maxPredictions > 0 && id >= 0) {
-				System.out.println(possible.get(id).getValue());
+				//System.out.println(possible.get(id).getValue());
 				predictions.add(possible.get(id).getValue());
 				maxPredictions --;
 				id --;

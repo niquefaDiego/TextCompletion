@@ -15,5 +15,11 @@ public class WriterApplicationController
 	@FXML
 	public void initialize() {
 		autocompleteTextArea.setText("Texto inicial :)" );
+		autocompleteTextArea.setWriterApplicationController ( this );
+		
+		previousWord.textProperty().bind( autocompleteTextArea.getData().getPreviousWord());
+		previousWordType.textProperty().bind( autocompleteTextArea.getData().getPreviousWordType());
+		currentWord.textProperty().bind( autocompleteTextArea.getData().getCurrentWord());
+		currentWordExpectedType.textProperty().bind( autocompleteTextArea.getData().getCurrentWordExpectedType());
 	}
 }

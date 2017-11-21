@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import core.DBParser;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
@@ -21,16 +23,27 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 	public static final int MAX_ENTRIES = 8;
 	public static final String NUMBER = "9"; //when the previous word is a number, previousWord will be "9"
 
+	private Data data = new Data();
 	private ListPopup dropdownList = null;
 	
 	// [) range of the word being typed, only used if dropdownList != null
 	private int wordBeg = -1, wordEnd = -1;
+	
+	private WriterApplicationController applicationController;
 	
 	private void hideDropdown() {
 		if ( dropdownList != null ) {
 			dropdownList.hide();
 			dropdownList = null;
 		}
+	}
+	
+	public void setWriterApplicationController ( WriterApplicationController controller ) {
+		applicationController = controller;
+	}
+	
+	public Data getData() {
+		return data;
 	}
 	
 	// --------------- START OF HACK ---------------------
@@ -112,10 +125,17 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 		System.out.println( "prevWord = " + previousWord + ", current word = " + currentWord );
 		
 		if ( currentWord == null ) {
+			data.resetValues();
 			hideDropdown();
 			return;
 		}
-
+		
+		if ( applicationController != null ) {
+			data.setValues(
+					previousWord, null,
+					currentWord, null);
+		}
+		
 		List<String> searchResult = DBParser.getInstance().getPredictions(previousWord, currentWord, MAX_ENTRIES);
 		if (searchResult.size() > 0) {
 			showInPopup(searchResult);
@@ -177,11 +197,71 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 					}
 					wordBeingTypedChanged(newText.substring(wordBeg, wordEnd), previousWord);	
 				}
-				else
+				else {
 					hideDropdown();
+					data.resetValues();
+				}
 			}
-			else
+			else {
+				data.resetValues();
 				hideDropdown();
+			}
+		}
+	}
+	
+	public static class Data {
+		StringProperty previousWord = new SimpleStringProperty();
+		StringProperty previousWordType = new SimpleStringProperty();
+		StringProperty currentWord = new SimpleStringProperty();
+		StringProperty currentWordExpectedType = new SimpleStringProperty();
+		
+		public StringProperty getPreviousWord() {
+			return previousWord;
+		}
+		
+		public StringProperty getPreviousWordType() {
+			return previousWordType;
+		}
+
+		public StringProperty getCurrentWord() {
+			return currentWord;
+		}
+		
+		public StringProperty getCurrentWordExpectedType() {
+			return currentWordExpectedType;
+		}
+		
+		public void resetValues() {
+			this.previousWord.setValue("");
+			this.previousWordType.setValue("");
+			this.currentWord.setValue("");
+			this.currentWordExpectedType.setValue("");
+		}
+		
+		public void setValues(
+				String previousWord,
+				String previousWordType,
+				String currentWord,
+				String currentWordExpectedType) {
+			
+			if ( previousWord == null )
+				previousWord = previousWordType = "";
+			else if ( previousWordType == null )
+				previousWordType = "Desconocido";
+			
+			if ( currentWord == null )
+				currentWord = currentWordExpectedType = null;
+			else if ( currentWordExpectedType == null )
+				currentWordExpectedType = "Desconocido";
+			
+			this.previousWord.setValue(previousWord);
+			this.previousWordType.setValue(previousWordType);
+			this.currentWord.setValue(currentWord);
+			this.currentWordExpectedType.setValue(currentWordExpectedType);
+		}
+		
+		public Data() {
+			resetValues();
 		}
 	}
 }
