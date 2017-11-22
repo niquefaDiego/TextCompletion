@@ -77,8 +77,6 @@ public class DBParser
 		catch ( IOException e ) { throw new RuntimeException(); }
 		
 		String line;
-		String longWord = null;
-		String longWordType = null;
 		int lineIndex = 0;
 		String previousType = null;
 		while ( true ) {
@@ -94,36 +92,13 @@ public class DBParser
 			if ( tokens.length != 3 )
 				throw new RuntimeException("Found line with 3 tokens: '" + line + "' (Line " + lineIndex + ")");
 			
-			String word = tokens[0];
+			String word = tokens[0].toLowerCase();
 			
 			tokens[1] = typeConversions.getOrDefault(tokens[1], tokens[1]);
 			
-			if ( tokens[2].charAt(0) == 'O' ) {
-				if ( longWord != null ) {
-					foundWord(longWord, longWordType);
-					addFreqToChain(previousType, longWordType);
-					previousType = longWordType;
-					longWord = longWordType = null;
-				}
-				foundWord ( word, tokens[1] );
-				addFreqToChain(previousType, tokens[1]);
-				previousType = tokens[1];
-			}
-			else if ( tokens[2].charAt(0) == 'I' ) {
-				longWord += " " + word;
-			}
-			else if ( tokens[2].charAt(0) == 'B' ){
-				longWord = word;
-				longWordType = tokens[2];
-			} else {
-				throw new RuntimeException ( "Invalid 3rd token (Line " + lineIndex + ")" );
-			}
-		}
-		
-		if ( longWord != null ) {
-			foundWord ( longWord, longWordType );
-			addFreqToChain(previousType, longWordType);
-			longWord = longWordType = null;
+			foundWord ( word, tokens[1] );
+			addFreqToChain(previousType, tokens[1]);
+			previousType = tokens[1];
 		}
 		
 		calcProbabilities();
@@ -215,6 +190,7 @@ public class DBParser
 	}
 
 	public String getExpectedType(String previousWordType, String currentWord) {
+		System.out.println( "getExpected(" + previousWordType + ","+ currentWord + ")");
 		if ( previousWordType == null ) return null;
 		Map<String, Double> edges = markovChain.getOrDefault(previousWordType, null);
 		if ( edges == null ) return null;
