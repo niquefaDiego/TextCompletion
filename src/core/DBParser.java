@@ -12,6 +12,11 @@ public class DBParser
 {
 	private static DBParser instance;
 	private static final Object lock = new Object();
+	private static Map<String,String> typeConversions = new HashMap<String,String>();
+	
+	static {
+		typeConversions.put("P0","PN");
+	}
 	
 	public static DBParser getInstance() {
 		synchronized(lock) {
@@ -90,6 +95,9 @@ public class DBParser
 				throw new RuntimeException("Found line with 3 tokens: '" + line + "' (Line " + lineIndex + ")");
 			
 			String word = tokens[0];
+			
+			if ( typeConversions.containsKey(tokens[1]) )
+				tokens[1] = typeConversions.get(tokens[1]);
 
 			if ( tokens[2].charAt(0) == 'O' ) {
 				if ( longWord != null ) {
@@ -133,12 +141,20 @@ public class DBParser
 		
 //		System.out.println( "-------- TYPES --------" );
 		System.out.println( "There are " + types.size() + " types" );
-//		for ( String type : types.keySet() ) {
-//			System.out.print( type + ":" );
-//			for ( String word : types.get(type) )
-//				System.out.print ( " " + word );
-//			System.out.println();
-//		}
+		int unknownCount = 0;
+		for ( String type : types.keySet() ) {
+			System.out.print( type );
+			if ( Tags.getName(type) == null ) unknownCount++;
+			else System.out.print( " (" + Tags.getName(type) + ")");
+			System.out.print(":");
+			int counter = 0;
+			for ( String word : types.get(type) ) {
+				System.out.print ( " " + word );
+				if ( counter++ > 20 ) break;
+			}
+			System.out.println();
+		}
+		System.out.println("There are " + unknownCount + " unknown types");
 		
 		try {in.close();}
 		catch ( IOException e ) { e.printStackTrace(); }
