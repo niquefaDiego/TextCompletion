@@ -15,6 +15,7 @@
 	minWidth="-Infinity"
 	xmlns="http://javafx.com/javafx/8"
 	xmlns:fx="http://javafx.com/fxml/1"
+	fx:id="root"
 	fx:controller="application.WriterApplicationController">
 
 	<children>
@@ -29,12 +30,12 @@
 					GridPane.columnIndex="0" GridPane.rowIndex="0"
 					GridPane.columnSpan="1"/>
 					
-				<Label text="alan" 
+				<Label text="" 
 					fx:id="previousWord"
 					GridPane.columnIndex="1" GridPane.rowIndex="0"
 					GridPane.columnSpan="1"/>
 					
-				<Label text="sustantivo"
+				<Label text=""
 					fx:id="previousWordType" 
 					GridPane.columnIndex="2" GridPane.rowIndex="0"
 					GridPane.columnSpan="1"/>
@@ -42,7 +43,7 @@
 				<Label text="Palabra actual:"
 					GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 				 
-				<Label text="yis"
+				<Label text=""
 					fx:id="currentWord"
 					GridPane.columnIndex="1" GridPane.rowIndex="1"
 					GridPane.columnSpan="2"/>
@@ -50,7 +51,7 @@
 				<Label text="Tipo esperado:"
 					GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 					
-				<Label text="verbo"
+				<Label text=""
 					fx:id="currentWordExpectedType"
 					GridPane.columnIndex="1" GridPane.rowIndex="2"
 					GridPane.columnSpan="2"/>

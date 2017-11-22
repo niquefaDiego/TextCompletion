@@ -2,9 +2,11 @@ package application;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 
 public class WriterApplicationController
 {
+	@FXML VBox root;
 	@FXML AutocompleteTextArea autocompleteTextArea;
 	
 	@FXML Label previousWord;

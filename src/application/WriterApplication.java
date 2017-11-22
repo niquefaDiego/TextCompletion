@@ -15,6 +15,12 @@ public class WriterApplication extends Application
 		FXMLLoader fxmlLoader = new FXMLLoader(ListPopup.class.getResource("WriterApplication.fxml"));
 		Parent content = fxmlLoader.load();
 		WriterApplicationController controller = (WriterApplicationController) fxmlLoader.getController();
+		Scene scene = new Scene(content );
+		
+		controller.root.prefHeightProperty().bind( scene.heightProperty() );
+		controller.root.prefWidthProperty().bind(scene.widthProperty());
+		
+		controller.autocompleteTextArea.prefHeightProperty().bind( controller.root.heightProperty() );
 		
 		/*AutocompleteTextArea textArea = new AutocompleteTextArea();
 		
@@ -27,7 +33,7 @@ public class WriterApplication extends Application
 
 		
 		primaryStage.setScene(scene);*/
-		primaryStage.setScene( new Scene(content) );
+		primaryStage.setScene( scene );
 		primaryStage.show();
 	}
 }
