@@ -96,9 +96,8 @@ public class DBParser
 			
 			String word = tokens[0];
 			
-			if ( typeConversions.containsKey(tokens[1]) )
-				tokens[1] = typeConversions.get(tokens[1]);
-
+			tokens[1] = typeConversions.getOrDefault(tokens[1], tokens[1]);
+			
 			if ( tokens[2].charAt(0) == 'O' ) {
 				if ( longWord != null ) {
 					foundWord(longWord, longWordType);
@@ -178,7 +177,16 @@ public class DBParser
 		return A*freq.get(word) + B*getHighestMarkovChainValue(prevWord, word);
 	}
 	
+	public String getType(String word) {
+		if ( word == null ) return null;
+		word = word.toLowerCase();
+		Set<String> types = words.getOrDefault(word, null);;
+		if ( types == null ) return null;
+		return types.iterator().next();
+	}
+	
 	public synchronized List<String> getPredictions(String prevWord, String current, int maxPredictions) {
+		prevWord = prevWord == null ? null : prevWord.toLowerCase();
 		List<String> predictions = new ArrayList<String>();
 		List<Pair<Double, String>> possible = new ArrayList<Pair<Double, String>>();
 		for(Entry<String, Set<String>> entry: words.entrySet()) {
@@ -204,6 +212,20 @@ public class DBParser
 			}
 		}
 		return predictions;
+	}
+
+	public String getExpectedType(String previousWordType, String currentWord) {
+		if ( previousWordType == null ) return null;
+		Map<String, Double> edges = markovChain.getOrDefault(previousWordType, null);
+		if ( edges == null ) return null;
+		String best = null;
+		double bestProb = -1;
+		for ( Map.Entry<String, Double> entry : edges.entrySet() )
+			if ( entry.getValue() > bestProb ) {
+				bestProb = entry.getValue();
+				best = entry.getKey();
+			}
+		return best;
 	}
 
 }

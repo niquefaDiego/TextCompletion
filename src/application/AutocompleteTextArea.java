@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import core.DBParser;
+import core.Tags;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -110,7 +111,6 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 	
 	@Override
 	public void autocomplete( String value ) {
-		System.out.println( "autocompleted '" + value + "'");
 		String currentText = getText(); 
 		String newText = currentText.substring(0,wordBeg)
 				+ value
@@ -130,13 +130,18 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 			return;
 		}
 		
+		DBParser parser = DBParser.getInstance();
+		List<String> searchResult = parser.getPredictions(previousWord, currentWord, MAX_ENTRIES);
+		
 		if ( applicationController != null ) {
+			String previousWordType = parser.getType(previousWord);
+			String expectedWordType = Tags.getName(
+					parser.getExpectedType(previousWordType, currentWord));
 			data.setValues(
-					previousWord, null,
-					currentWord, null);
+					previousWord, Tags.getName(previousWordType),
+					currentWord, expectedWordType );
 		}
 		
-		List<String> searchResult = DBParser.getInstance().getPredictions(previousWord, currentWord, MAX_ENTRIES);
 		if (searchResult.size() > 0) {
 			showInPopup(searchResult);
 		} else {

@@ -15,7 +15,11 @@ public class Tags {
 	private static Map<Character,String> pronouns;
 	private static Map<Character,String> verbs1, verbs2;
 
-	public static String getName ( String tag ) {
+	public static String getName ( String tag )
+	{
+		if ( tag == null )
+			return null;
+		
 		switch ( tag.charAt(0) ) {
 			case 'A':
 				return "Adjetivo " + adjectives.get(tag.charAt(1));
