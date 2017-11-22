@@ -155,6 +155,7 @@ public class DBParser
 	public String getType(String word) {
 		if ( word == null ) return null;
 		word = word.toLowerCase();
+		if ( word.matches("[0-9]+") ) return Tags.NUMBER_TYPE;
 		Set<String> types = words.getOrDefault(word, null);;
 		if ( types == null ) return null;
 		return types.iterator().next();

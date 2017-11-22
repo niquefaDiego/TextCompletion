@@ -4,7 +4,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class Tags {
-
+	public static final String NUMBER_TYPE = "Z";
+	
 	private static Map<Character,String> adjectives;
 	private static Map<Character,String> adverbs;
 	private static Map<Character, String> blocks;

@@ -22,7 +22,6 @@ import javafx.stage.Window;
 public class AutocompleteTextArea extends TextArea implements AutocompleteCallback
 {
 	public static final int MAX_ENTRIES = 8;
-	public static final String NUMBER = "9"; //when the previous word is a number, previousWord will be "9"
 
 	private Data data = new Data();
 	private ListPopup dropdownList = null;
@@ -187,18 +186,23 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 					//find previus word
 					iters = 0;
 					int j = wordBeg-1;
-					while ( j >= 0 && !Character.isLetter(newText.charAt(j))
-							&& !Character.isDigit(newText.charAt(j))
+					while ( j >= 0 && Character.isWhitespace(newText.charAt(j))
 							&& iters++ < MAX_ITERS ) j--;
 					int i = j;
-					while ( i >= 0 && Character.isLetter(newText.charAt(i))
-							&& iters++ < MAX_ITERS ) i--;
-					i++;
+					if ( j >= 0 && Character.isLetter(newText.charAt(j)) ) {
+						while ( i >= 0 && Character.isLetter(newText.charAt(i))
+								&& iters++ < MAX_ITERS ) i--;
+						i++;
+					}
+					else if ( j >= 0 && Character.isDigit(newText.charAt(j)) ) {
+						while ( i >= 0 && Character.isDigit(newText.charAt(i))
+								&& iters++ < MAX_ITERS ) i--;
+						i++;
+					}
 					
 					String previousWord = null;
 					if ( j >= 0 && iters < MAX_ITERS ) {
-						if ( Character.isDigit(newText.charAt(j)) ) previousWord = NUMBER;
-						else previousWord = newText.substring(i,j+1);
+						previousWord = newText.substring(i,j+1);
 					}
 					wordBeingTypedChanged(newText.substring(wordBeg, wordEnd), previousWord);	
 				}
