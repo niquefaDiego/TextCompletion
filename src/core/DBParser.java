@@ -27,11 +27,11 @@ public class DBParser
 		}
 	}
 	public final double A = 0.5;
-	public final double B = 0.5;
+	public final double B = 1;
 	
 	Map<String, Set<String> > words = new TreeMap<String, Set<String>>();
 	Map<String, Set<String> > types = new TreeMap<String, Set<String>>();
-	Map<String, Integer> freq = new TreeMap<String, Integer>();
+	Map<String, Double> freq = new TreeMap<String, Double>();
 	Map<String, Map<String, Double>> markovChain = new TreeMap<String, Map<String, Double>>();
 	
 	public void foundWord ( String word, String type ) {
@@ -42,7 +42,7 @@ public class DBParser
 		if ( !types.containsKey(type) )
 			types.put( type, new TreeSet<String>() );
 		if (!freq.containsKey(word)) 
-			freq.put(word, 0);
+			freq.put(word, 0.0);
 		words.get(word).add(type);
 		types.get(type).add(word);
 		freq.put(word, freq.get(word) + 1);
@@ -58,17 +58,46 @@ public class DBParser
 		chainRow.put(current, chainRow.get(current) + 1);
 	}
 	
-	private void calcProbabilities() {
-		for (Map<String, Double> chainRow: markovChain.values()) {
-			int total = 0;
+	private void calcProbabilities()
+	{
+		BufferedWriter out = null;
+		try { out = new BufferedWriter ( new FileWriter("MarkovChain.txt") ); }
+		catch (IOException e) { e.printStackTrace(); }
+
+		for (Map.Entry<String,Map<String,Double>> entry: markovChain.entrySet()) {
+			
+			boolean debug = Tags.getName(entry.getKey()).equals("Determinante Exclamativo");
+			Map<String, Double> chainRow = entry.getValue();
+			double total = 0;
 			for(double value: chainRow.values()) {
 				total += value;
 			}
-
-			for(String key: chainRow.keySet()) {
-					chainRow.put(key, chainRow.get(key)/total);
+			
+			double outProb = 0;
+			for(Map.Entry<String,Double> rowEntry: chainRow.entrySet()) {
+				//if ( debug ) System.out.println( "debug -> " + rowEntry );
+				rowEntry.setValue( rowEntry.getValue()/total );
+				outProb += rowEntry.getValue();
+				try {
+					out.write( Tags.getName( entry.getKey() ) + " -> "
+							+ Tags.getName(rowEntry.getKey()) + " (" + (rowEntry.getValue()) + ")\n" );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+			System.out.println ( "Out prob of " + entry.getKey() + " = " + outProb );
 		}
+		
+		if ( out != null )
+			try {
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		
+		for ( Map.Entry<String,Double> entry : freq.entrySet() )
+			entry.setValue( entry.getValue() / (double) freq.size() );
 	}
 	
 	private DBParser()
