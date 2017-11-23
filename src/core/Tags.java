@@ -33,7 +33,7 @@ public class Tags {
 					return "Artículo";
 				return "Determinante " + determiners.get(tag.charAt(1));
 			case 'I':
-				return "Interjerción";
+				return "Interjercción";
 			case 'F':
 				return "Puntuación: " + punctuation.get(tag.substring(1));
 			case 'N':
@@ -104,8 +104,8 @@ public class Tags {
 		punctuation.put("e", "Comillas");
 		punctuation.put("g", "Raya");
 		punctuation.put("h", "Slash");
-		punctuation.put("ia", "Abrir interrogación");
-		punctuation.put("it", "Cerrar interrogación");
+		punctuation.put("ia", "Abrir Interrogación");
+		punctuation.put("it", "Cerrar Interrogación");
 		punctuation.put("p", "Punto");
 		punctuation.put("pa", "Abrir Paréntesis");
 		punctuation.put("pt", "Cerrar Paréntesis");
@@ -113,6 +113,8 @@ public class Tags {
 		punctuation.put("t", "Porcentaje");
 		punctuation.put("x", "Punto y coma");
 		punctuation.put("z", "Operador Aritmético");
+		punctuation.put("aa", "Abrir Exclamación");
+		punctuation.put("at", "Cerrar Exclamación");
 		
 		verbs1 = new TreeMap<Character, String>();
 		verbs1.put('M', "Principal");
