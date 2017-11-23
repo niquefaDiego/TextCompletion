@@ -127,7 +127,7 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 	
 	private void wordBeingTypedChanged ( String currentWord, String previousWord ) {
 		
-		System.out.println( "prevWord = " + previousWord + ", current word = " + currentWord );
+		//System.out.println( "prevWord = " + previousWord + ", current word = " + currentWord );
 		
 		if ( currentWord == null ) {
 			data.resetValues();

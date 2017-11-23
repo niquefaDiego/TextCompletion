@@ -86,7 +86,7 @@ public class DBParser
 					e.printStackTrace();
 				}
 			}
-			System.out.println ( "Out prob of " + entry.getKey() + " = " + outProb );
+			// System.out.println ( "Out prob of " + entry.getKey() + " = " + outProb );
 		}
 		
 		if ( out != null )
@@ -141,7 +141,7 @@ public class DBParser
 		calcProbabilities();
 		
 //		System.out.println( "-------- WORDS --------" );
-		System.out.println( "There are " + words.size() + " words" );
+//		System.out.println( "There are " + words.size() + " words" );
 //		for ( String word : words.keySet() ) {
 //			System.out.print( word + ":" );
 //			for ( String type : words.get(word) )
@@ -151,21 +151,21 @@ public class DBParser
 //		}
 		
 //		System.out.println( "-------- TYPES --------" );
-		System.out.println( "There are " + types.size() + " types" );
-		int unknownCount = 0;
-		for ( String type : types.keySet() ) {
-			System.out.print( type );
-			if ( Tags.getName(type) == null ) unknownCount++;
-			else System.out.print( " (" + Tags.getName(type) + ")");
-			System.out.print(":");
-			int counter = 0;
-			for ( String word : types.get(type) ) {
-				System.out.print ( " " + word );
-				if ( counter++ > 20 ) break;
-			}
-			System.out.println();
-		}
-		System.out.println("There are " + unknownCount + " unknown types");
+//		System.out.println( "There are " + types.size() + " types" );
+//		int unknownCount = 0;
+//		for ( String type : types.keySet() ) {
+//			System.out.print( type );
+//			if ( Tags.getName(type) == null ) unknownCount++;
+//			else System.out.print( " (" + Tags.getName(type) + ")");
+//			System.out.print(":");
+//			int counter = 0;
+//			for ( String word : types.get(type) ) {
+//				System.out.print ( " " + word );
+//				if ( counter++ > 20 ) break;
+//			}
+//			System.out.println();
+//		}
+//		System.out.println("There are " + unknownCount + " unknown types");
 
 	}
 	
@@ -227,7 +227,7 @@ public class DBParser
 	}
 
 	public String getExpectedType(String previousWordType, String currentWord) {
-		System.out.println( "getExpected(" + previousWordType + ","+ currentWord + ")");
+		// System.out.println( "getExpected(" + previousWordType + ","+ currentWord + ")");
 		if ( previousWordType == null ) return null;
 		Map<String, Double> edges = markovChain.getOrDefault(previousWordType, null);
 		if ( edges == null ) return null;
