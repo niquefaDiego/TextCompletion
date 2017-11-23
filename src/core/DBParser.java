@@ -64,41 +64,49 @@ public class DBParser
 			for(double value: chainRow.values()) {
 				total += value;
 			}
+
 			for(String key: chainRow.keySet()) {
 					chainRow.put(key, chainRow.get(key)/total);
 			}
 		}
 	}
 	
-	private DBParser() {
-		BufferedReader in;
+	private DBParser()
+	{
+		String fileNames[] = new String[] { "esp.testa.txt", "esp.testb.txt", "esp.train.txt" };
 		
-		try { in = new BufferedReader ( new FileReader("esp.train.txt") ); }
-		catch ( IOException e ) { throw new RuntimeException(); }
-		
-		String line;
-		int lineIndex = 0;
-		String previousType = null;
-		while ( true ) {
-			lineIndex++;
+		for ( String file : fileNames ) { 
+			BufferedReader in;
+			try { in = new BufferedReader ( new FileReader(file) ); }
+			catch ( IOException e ) { throw new RuntimeException(); }
 			
-			try { line = in.readLine(); }
-			catch ( IOException e ) { throw new RuntimeException("Failed to read line " + lineIndex); }
-			if ( line == null ) break;
-			
-			line = line.trim();
-			if ( line.isEmpty() ) continue;
-			String tokens[] = line.split(" ");
-			if ( tokens.length != 3 )
-				throw new RuntimeException("Found line with 3 tokens: '" + line + "' (Line " + lineIndex + ")");
-			
-			String word = tokens[0].toLowerCase();
-			
-			tokens[1] = typeConversions.getOrDefault(tokens[1], tokens[1]);
-			
-			foundWord ( word, tokens[1] );
-			addFreqToChain(previousType, tokens[1]);
-			previousType = tokens[1];
+			String line;
+			int lineIndex = 0;
+			String previousType = null;
+			while ( true ) {
+				lineIndex++;
+				
+				try { line = in.readLine(); }
+				catch ( IOException e ) { throw new RuntimeException("Failed to read line " + lineIndex); }
+				if ( line == null ) break;
+				
+				line = line.trim();
+				if ( line.isEmpty() ) continue;
+				String tokens[] = line.split(" ");
+				if ( tokens.length != 3 )
+					throw new RuntimeException("Found line with 3 tokens: '" + line + "' (Line " + lineIndex + ")");
+				
+				String word = tokens[0].toLowerCase();
+				
+				tokens[1] = typeConversions.getOrDefault(tokens[1], tokens[1]);
+				
+				foundWord ( word, tokens[1] );
+				addFreqToChain(previousType, tokens[1]);
+				previousType = tokens[1];
+			}
+						
+			try {in.close();}
+			catch ( IOException e ) { e.printStackTrace(); }
 		}
 		
 		calcProbabilities();
@@ -129,9 +137,7 @@ public class DBParser
 			System.out.println();
 		}
 		System.out.println("There are " + unknownCount + " unknown types");
-		
-		try {in.close();}
-		catch ( IOException e ) { e.printStackTrace(); }
+
 	}
 	
 	private double getHighestMarkovChainValue(String prevWord, String word) {
@@ -163,6 +169,7 @@ public class DBParser
 	
 	public synchronized List<String> getPredictions(String prevWord, String current, int maxPredictions) {
 		prevWord = prevWord == null ? null : prevWord.toLowerCase();
+		current = current == null ? null : current.toLowerCase();
 		List<String> predictions = new ArrayList<String>();
 		List<Pair<Double, String>> possible = new ArrayList<Pair<Double, String>>();
 		for(Entry<String, Set<String>> entry: words.entrySet()) {

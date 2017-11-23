@@ -66,6 +66,7 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 	}
 
 	private Point2D findScreenLocation(Node node) {
+		if ( node == null ) return new Point2D(0,0);
 		double x = 0;
 		double y = 0;
 		for (Node n = node; n != null; n=n.getParent()) {
@@ -110,9 +111,14 @@ public class AutocompleteTextArea extends TextArea implements AutocompleteCallba
 	
 	@Override
 	public void autocomplete( String value ) {
-		String currentText = getText(); 
+		String currentText = getText();
+		char[] val = value.toCharArray();
+		String currentWord = data.currentWord.getValue();
+		for ( int i = 0; i < val.length && i < currentWord.length(); ++i )
+			if ( Character.isUpperCase(currentWord.charAt(i)) )
+				val[i] = Character.toUpperCase(val[i]);
 		String newText = currentText.substring(0,wordBeg)
-				+ value
+				+ new String(val)
 				+ currentText.substring(wordEnd);
 		setText(newText);
 		positionCaret(wordBeg + value.length());
